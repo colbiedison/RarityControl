@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "id": "raritycontrol",
+  "version": "${version}",
+  "name": "RarityControl",
+  "description": "Change minecraft's built in item rarity colors to any specified hex color in a config file; modify the list of items assigned to a specific rarity.",
+  "authors": [],
+  "contact": {},
+  "license": "MIT",
+  "icon": "assets/raritycontrol/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "us.dison.rarityctl.client.RarityControlClient"
+    ],
+    "main": [
+      "us.dison.rarityctl.RarityControl"
+    ]
+  },
+  "mixins": [
+    "raritycontrol.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.13.2",
+    "fabric": "*",
+    "minecraft": "1.18.1"
+  }
+}
