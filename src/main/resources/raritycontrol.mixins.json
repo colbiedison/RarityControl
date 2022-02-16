@@ -1,11 +1,18 @@
 {
   "required": true,
   "minVersion": "0.8",
-  "package": "us.dison.raritycontrol.mixin",
+  "package": "us.dison.rarityctl.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
+    "ItemAccessor",
+    "ItemMixin"
   ],
   "client": [
+    "client.MinecraftClientMixin",
+    "client.ClientPlayerEntityMixin"
+  ],
+  "server": [
+    "MinecraftServerMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -8,13 +8,17 @@
   "contact": {},
   "license": "MIT",
   "icon": "assets/raritycontrol/icon.png",
-  "environment": "client",
+  "environment": "*",
+  "accessWidener" : "raritycontrol.accesswidener",
   "entrypoints": {
     "client": [
       "us.dison.rarityctl.client.RarityControlClient"
     ],
     "main": [
       "us.dison.rarityctl.RarityControl"
+    ],
+    "mm:early_risers": [
+      "us.dison.rarityctl.EarlyRiser"
     ]
   },
   "mixins": [
