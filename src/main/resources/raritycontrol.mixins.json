@@ -4,15 +4,11 @@
   "package": "us.dison.rarityctl.mixin",
   "compatibilityLevel": "JAVA_17",
   "mixins": [
-    "ItemAccessor",
-    "ItemMixin"
+    "ItemStackMixin"
   ],
   "client": [
-    "client.MinecraftClientMixin",
-    "client.ClientPlayerEntityMixin"
   ],
   "server": [
-    "MinecraftServerMixin"
   ],
   "injectors": {
     "defaultRequire": 1
