@@ -19,21 +19,46 @@ import java.util.List;
 public abstract class ItemStackMixin {
     @Shadow public abstract Item getItem();
 
+    @Shadow public abstract boolean hasEnchantments();
+
     @Inject(method = "getRarity()Lnet/minecraft/util/Rarity;", at = @At("RETURN"), cancellable = true)
     private void getRarity(CallbackInfoReturnable<Rarity> cir) {
+        Rarity unmodifiedRarity = ((ItemAccessor) getItem()).getRarity();
+        Rarity originalRarity = unmodifiedRarity;
+        if (hasEnchantments()) { // Increase rarity like vanilla does
+            switch (unmodifiedRarity) {
+                case COMMON, UNCOMMON -> originalRarity = Rarity.RARE;
+                case RARE -> originalRarity = Rarity.EPIC;
+            }
+        }
+        Rarity newRarity = null;
+
+        if (Config.getOverrides().contains(originalRarity.name())) { // If the item isn't specified, but its default rarity has been modified,
+            newRarity = ClassTinkerers.getEnum(Rarity.class, "_"+originalRarity.name()); // set its rarity to the overriding one.
+        }
 
         final List<RarityCustom> rarities = Config.getInstance().getConfig().getRarities();
-        for (int i = 0; i < rarities.size(); i++) { // For each custom rarity,
+        if (rarities == null) {
+            cir.setReturnValue(originalRarity);
+        }
+        for (int i = 0; i < rarities.size(); i++) {
 
             final RarityCustom rarity = rarities.get(i);
-            for (int j = 0; j < rarity.getItems().size(); j++) { // for each item specified,
-
+            if (rarity.getItems() == null) continue;
+            for (int j = 0; j < rarity.getItems().size(); j++) { // For each item specified,
                 final String item = rarity.getItems().get(j);
                 if (Registry.ITEM.getId(getItem()).toString().equals(item)) { // set its rarity
-                    cir.setReturnValue(ClassTinkerers.getEnum(Rarity.class, rarity.getName()));
+                    if (rarity.getName().equals("COMMON") || rarity.getName().equals("UNCOMMON") || rarity.getName().equals("RARE") || rarity.getName().equals("EPIC")) { // if
+                        newRarity = ClassTinkerers.getEnum(Rarity.class, "_"+rarity.getName());
+                    } else {
+                        newRarity = ClassTinkerers.getEnum(Rarity.class, rarity.getName());
+                    }
                 }
             }
         }
 
+        if (newRarity != null) {
+            cir.setReturnValue(newRarity);
+        }
     }
 }

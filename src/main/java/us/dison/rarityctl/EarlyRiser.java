@@ -16,26 +16,33 @@ public class EarlyRiser implements Runnable {
 
     @Override
     public void run() {
-        System.out.println("EARLY RISER");
+        RarityControl.LOGGER.info("EARLY RISER");
 
         Config.init();
         final Config config = Config.getInstance();
 
         final List<RarityCustom> rarities = config.getConfig().getRarities();
+        if (rarities == null) {
+            return;
+        }
         for (int i = 0; i < rarities.size(); i++) {
             final RarityCustom rarity = rarities.get(i);
-            final int newIndex = 128 + i;
+            final int newIndex = 118 + i;
             final char newCode = (char) newIndex;
-            final String newFormat = "RARITYCONTROL"+i;
+            final String newFormat = "raritycontrol"+ newCode;
 
+            RarityControl.LOGGER.debug("Injecting custom format: "+newFormat);
             ClassTinkerers.enumBuilder(CLASS_FORMATTING, String.class, char.class, boolean.class, int.class, Integer.class).addEnum(newFormat,newFormat, newCode, false, newIndex, rarity.getColor()).build();
 
             switch (rarity.getName()) {
-                case "COMMON"   -> ClassTinkerers.enumBuilder(CLASS_RARITY, "L"+CLASS_FORMATTING+";").addEnum("COMMMON", () -> new Object[]{ClassTinkerers.getEnum(Formatting.class, newFormat)}).build();
-                case "UNCOMMON"   -> ClassTinkerers.enumBuilder(CLASS_RARITY, "L"+CLASS_FORMATTING+";").addEnum("UNCOMMON", () -> new Object[]{ClassTinkerers.getEnum(Formatting.class, newFormat)}).build();
-                case "RARE"   -> ClassTinkerers.enumBuilder(CLASS_RARITY, "L"+CLASS_FORMATTING+";").addEnum("RARE", () -> new Object[]{ClassTinkerers.getEnum(Formatting.class, newFormat)}).build();
-                case "EPIC"   -> ClassTinkerers.enumBuilder(CLASS_RARITY, "L"+CLASS_FORMATTING+";").addEnum("EPIC", () -> new Object[]{ClassTinkerers.getEnum(Formatting.class, newFormat)}).build();
-                default -> ClassTinkerers.enumBuilder(CLASS_RARITY, "L"+CLASS_FORMATTING+";").addEnum(rarity.getName(), () -> new Object[]{ClassTinkerers.getEnum(Formatting.class, newFormat)}).build();
+                case "COMMON", "UNCOMMON", "RARE", "EPIC" -> {
+                    RarityControl.LOGGER.debug("Injecting custom rarity: _"+newFormat);
+                    ClassTinkerers.enumBuilder(CLASS_RARITY, "L"+CLASS_FORMATTING+";").addEnum("_"+rarity.getName(), () -> new Object[]{ClassTinkerers.getEnum(Formatting.class, newFormat)}).build();
+                }
+                default -> {
+                    RarityControl.LOGGER.debug("Injecting custom rarity: "+newFormat);
+                    ClassTinkerers.enumBuilder(CLASS_RARITY, "L"+CLASS_FORMATTING+";").addEnum(rarity.getName(), () -> new Object[]{ClassTinkerers.getEnum(Formatting.class, newFormat)}).build();
+                }
             }
         }
 
